@@ -23,8 +23,7 @@ def apply_hex_patch(file, offset, old_value, new_value):
         f.seek(offset)
         actual_bytes = f.read(byte_len)
         
-        # TODO: Change new to old
-        if actual_bytes != new_value_bytes:
+        if actual_bytes != old_value_bytes:
             print("Original bytes do not match the bytes in the file.")
             return False
             
@@ -42,8 +41,7 @@ def apply_int_patch(file, offset, old_value, new_value, byte_amount, is_signed):
         f.seek(offset)
         actual_bytes = f.read(byte_amount)
         
-        # TODO: Change new to old
-        if actual_bytes != new_value_int_bytes:
+        if actual_bytes != old_value_int_bytes:
             print("Original bytes do not match the bytes in the file.")
             return False
             
@@ -62,8 +60,7 @@ def apply_float_patch(file, offset, old_value, new_value, is_single):
         f.seek(offset)
         actual_bytes = f.read(byte_amount)
         
-        # TODO: Change new to old
-        if actual_bytes != new_value_float_bytes:
+        if actual_bytes != old_value_float_bytes:
             print("Original bytes do not match the bytes in the file.")
             return False
             
@@ -103,7 +100,6 @@ def start():
     read_header = True
     file_path = None
 
-    # TODO: Remove hardcoded path
     with open(args.config_file, 'r') as file:
         for line in file:
             clean_line = line.rstrip()
@@ -126,8 +122,7 @@ def start():
                     
                     actual_file_hash = get_file_hash(file_path, 'sha1')
                     
-                    # TODO: Change to not equals
-                    if actual_file_hash == file_hash:
+                    if actual_file_hash != file_hash:
                         print(f"Hash for {file_path} does not match.", file=sys.stderr)
                         return
                 else:
