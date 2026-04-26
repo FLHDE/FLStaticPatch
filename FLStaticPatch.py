@@ -2,6 +2,7 @@ import hashlib
 import sys
 import os
 import struct
+import argparse
 
 def apply_hex_patch(file, offset, old_value, new_value):
     old_value_no_space = old_value.replace(' ', '')
@@ -92,26 +93,33 @@ def get_file_hash(file, hash):
         return hashlib.file_digest(f, hash).hexdigest()
 
 def start():
+    parser = argparse.ArgumentParser(
+        prog='FLStaticPatch',
+        description='Patches binary files based on a config.')
+    parser.add_argument('config_file', help='Path to the config file.')
+    parser.add_argument('freelancer_dir', help='Path to the Freelancer directory.')
+    args = parser.parse_args()
+
     read_header = True
     file_path = None
 
-    with open('BinaryEdits.txt', 'r') as file:
+    # TODO: Remove hardcoded path
+    with open(args.config_file, 'r') as file:
         for line in file:
-            cleanLine = line.rstrip()
+            clean_line = line.rstrip()
             
-            if cleanLine:
-                if cleanLine[0] == '#':
+            if clean_line:
+                if clean_line[0] == '#':
                     continue
                 elif read_header:
                     # Parsing header
                     read_header = False
                     
-                    header_split = cleanLine.split(' ')
+                    header_split = clean_line.split(' ')
                     file_name = header_split[0]
                     file_hash = header_split[1].replace('.', '')
                     
-                    # TODO: remove hard coded path
-                    file_path = get_file_path(file_name, 'D:\\Projects\\Freelancer\\freelancer-hd-edition')
+                    file_path = get_file_path(file_name, args.freelancer_dir)
                     if not file_path:
                         print(f"Could not find file '{file_name}'.", file=sys.stderr)
                         return
@@ -123,7 +131,7 @@ def start():
                         print(f"Hash for {file_path} does not match.", file=sys.stderr)
                         return
                 else:
-                    offset_split = cleanLine.split(':', 1)
+                    offset_split = clean_line.split(':', 1)
                     offset = offset_split[0]
                     offset_hex = int(f"0x{offset}", 16)
                     
@@ -151,21 +159,16 @@ def start():
                         result = apply_float_patch(file_path, offset_hex, original_value, new_value, is_single)
                     else:
                         print(f"Unknown patch type {edit_type}.", file=sys.stderr)
-                        result = False
 
-                    
+
                     if not result:
                         print(f"Patch {patch_str} is invalid. See above.", file=sys.stderr)
                         return
                     else:
                         print(f"Applied patch {patch_str}")
                     
-                    
-                    
             else:
                 read_header = True
-            
-            #print(cleanLine)
             
 
 if __name__ == "__main__":
