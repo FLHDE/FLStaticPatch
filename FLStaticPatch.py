@@ -117,14 +117,14 @@ def start():
                     
                     file_path = get_file_path(file_name, args.freelancer_dir)
                     if not file_path:
-                        print(f"Could not find file '{file_name}'.", file=sys.stderr)
-                        return
+                        print(f"Could not find file '{file_name}'.")
+                        return False
                     
                     actual_file_hash = get_file_hash(file_path, 'sha1')
                     
                     if actual_file_hash != file_hash:
-                        print(f"Hash for {file_path} does not match.", file=sys.stderr)
-                        return
+                        print(f"Hash for {file_path} does not match.")
+                        return False
                 else:
                     offset_split = clean_line.split(':', 1)
                     offset = offset_split[0]
@@ -153,18 +153,21 @@ def start():
                         is_single = edit_type.split('Float')[1] == '32'
                         result = apply_float_patch(file_path, offset_hex, original_value, new_value, is_single)
                     else:
-                        print(f"Unknown patch type {edit_type}.", file=sys.stderr)
+                        print(f"Unknown patch type {edit_type}.")
 
 
                     if not result:
-                        print(f"Patch {patch_str} is invalid. See above.", file=sys.stderr)
-                        return
+                        print(f"Patch {patch_str} is invalid. See above.")
+                        return False
                     else:
                         print(f"Applied patch {patch_str}")
                     
             else:
                 read_header = True
+
+        return True
             
 
 if __name__ == "__main__":
-    start()
+    exit_code = 0 if start() else 1
+    exit(exit_code)
