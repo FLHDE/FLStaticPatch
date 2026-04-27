@@ -77,7 +77,7 @@ def find_file_in_folder(file_name, folder):
     return ''
     
 def get_file_path(file_name, fl_dir):
-    binary_dirs = ['EXE', 'DLLS\\BIN']
+    binary_dirs = ['EXE', 'DLLS/BIN']
     
     for dir in binary_dirs:
         file_path = find_file_in_folder(file_name, os.path.join(fl_dir, dir))
